@@ -13,6 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
+        \Illuminate\Database\Schema\Builder::morphUsingUuids();
         Schema::create('personal_access_tokens', function (Blueprint $table) {
             $table->id();
             $table->morphs('tokenable');
