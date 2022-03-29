@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UserStatus;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -49,10 +50,16 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime:Y-m-d',
         'created_at' => 'datetime:Y-m-d',
         'updated_at' => 'datetime:Y-m-d',
+        'status' => UserStatus::class,
     ];
 
     public function isVerified(): bool
     {
         return filled($this->email_verified_at);
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === UserStatus::Active;
     }
 }

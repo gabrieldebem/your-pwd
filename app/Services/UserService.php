@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\UserStatus;
+use App\Events\AccountActivatedEvent;
 use App\Models\User;
 use App\Notifications\EmailVerificationNotification;
 use Exception;
@@ -63,6 +64,7 @@ class UserService
 
     /**
      * Check Verification Code.
+     *
      * @throws Exception
      */
     public function checkVerificationCode(int $verificationCode): self
@@ -79,6 +81,37 @@ class UserService
         $this->user->email_verified_at = now();
         $this->user->status = UserStatus::Verified;
         $this->user->save();
+
+        return $this;
+    }
+
+    /**
+     * Active user.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function active()
+    {
+        $this->checkUser();
+
+        $this->user->status = UserStatus::Active;
+        $this->user->save();
+
+        event(new AccountActivatedEvent($this->user));
+    }
+
+    /**
+     * Check user is set;
+     *
+     * @return $this
+     * @throws Exception
+     */
+    public function checkUser(): self
+    {
+        if (blank($this->user)) {
+            throw new Exception('Usuário não foi definido', 500);
+        }
 
         return $this;
     }

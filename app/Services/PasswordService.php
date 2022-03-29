@@ -29,6 +29,13 @@ class PasswordService
         $this->password->password = $this->encrypt($password);
         $this->password->save();
 
+        if (! $this->password->user->isActive()) {
+            /** @UserService */
+            app(UserService::class)
+                ->setUser($this->password->user)
+                ->active();
+        }
+
         return $this;
     }
 
