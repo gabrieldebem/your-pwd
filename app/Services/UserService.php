@@ -29,6 +29,10 @@ class UserService
         $this->user->status = UserStatus::Pending;
         $this->user->save();
 
+        activity('user.created')
+            ->performedOn($this->user)
+            ->log('New user has been created.');
+
         return $this;
     }
 
@@ -51,6 +55,11 @@ class UserService
 
     public function checkSecret(string $secret): bool
     {
+        activity('secret.checked')
+            ->performedOn($this->user)
+            ->causedBy(auth()->user())
+            ->log('Current user has check this secret.');
+
         return Hash::check($secret, $this->user->secret);
     }
 
@@ -60,6 +69,11 @@ class UserService
         Cache::put('verificationCode', $verificationCode, now()->addMinutes(5));
 
         $this->user->notify(new EmailVerificationNotification($verificationCode));
+
+        activity('user.send_email_verification')
+            ->performedOn($this->user)
+            ->causedBy(auth()->user())
+            ->log('Current user has send email verification.');
     }
 
     /**
@@ -82,6 +96,13 @@ class UserService
         $this->user->status = UserStatus::Verified;
         $this->user->save();
 
+        activity('user.email_verified')
+            ->performedOn($this->user)
+            ->causedBy(auth()->user())
+            ->log('Current user email has been verified.');
+
+        Cache::forget('verificationCode');
+
         return $this;
     }
 
@@ -97,6 +118,10 @@ class UserService
 
         $this->user->status = UserStatus::Active;
         $this->user->save();
+
+        activity('user.activated')
+            ->performedOn($this->user)
+            ->log('Current user activated.');
 
         event(new AccountActivatedEvent($this->user));
     }

@@ -4,20 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model;
 
-class Password extends BaseModel
+class Device extends BaseModel
 {
     use HasFactory;
 
     protected $fillable = [
-        'password',
         'user_id',
-        'url',
-    ];
-
-    protected $with = [
-        'user',
+        'user_agent',
+        'ips',
     ];
 
     /**
@@ -32,10 +28,5 @@ class Password extends BaseModel
                 $builder->where('user_id', auth()->id());
             }
         });
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
     }
 }

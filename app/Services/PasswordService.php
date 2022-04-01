@@ -35,6 +35,9 @@ class PasswordService
                 ->setUser($this->password->user)
                 ->active();
         }
+        activity('password.created')
+            ->performedOn($this->password->user)
+            ->log('New password created.');
 
         return $this;
     }
@@ -46,6 +49,11 @@ class PasswordService
 
     public function decrypt(): string
     {
+        activity('password.decrypted')
+            ->performedOn($this->password->user)
+            ->causedBy(auth()->user())
+            ->log('Current user checked this password.');
+
         return Crypt::decryptString($this->password->password);
     }
 }

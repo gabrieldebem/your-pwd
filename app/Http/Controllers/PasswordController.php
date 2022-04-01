@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class PasswordController extends Controller
 {
@@ -23,7 +24,10 @@ class PasswordController extends Controller
      */
     public function index(): JsonResponse
     {
-        $passwords = Password::where('user_id', auth()->user()->id)->get();
+        $passwords = QueryBuilder::for(Password::class)
+            ->allowedFilters('url')
+            ->defaultSort('-created_at')
+            ->get();
 
         return response()->json($passwords);
     }
@@ -88,9 +92,12 @@ class PasswordController extends Controller
     }
 
     /**
+     * @param Request $request
+     * @param Password $password
+     * @return JsonResponse
      * @throws Exception
      */
-    public function showDecryptedPassword(Request $request, Password $password)
+    public function showDecryptedPassword(Request $request, Password $password): JsonResponse
     {
         if (! $password->user->isVerified()) {
             throw new Exception('Apenas usuários verificados podem utilizar esse recurso.', 400);

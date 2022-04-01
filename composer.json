@@ -11,6 +11,8 @@
         "laravel/octane": "^1.2",
         "laravel/sanctum": "^2.14",
         "laravel/tinker": "^2.7",
+        "spatie/laravel-activitylog": "^4.4",
+        "spatie/laravel-query-builder": "^5.0",
         "spiral/roadrunner": "^2.8.2"
     },
     "require-dev": {

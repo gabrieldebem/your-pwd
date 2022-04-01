@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/auth', [\App\Http\Controllers\AuthController::class, 'auth']);
 Route::post('/users', [\App\Http\Controllers\UserController::class, 'store']);
+Route::get('/test', function (Request $request) {
+    return response()->json($request->header());
+});
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/{user}', [\App\Http\Controllers\UserController::class, 'show']);
